@@ -30,19 +30,17 @@ This is a comprehensive machine learning project that demonstrates a complete wo
 
 2. **Run the Project**:
    ```bash
-   python PYTHON.py
+   python model_trainer.py
    ```
 
 ## 📈 Project Structure
 
-The project is organized into modular functions:
+The project is organized into modular files:
 
-- `load_and_explore_data()`: Loads and explores the dataset
-- `preprocess_data()`: Handles data preprocessing and scaling
-- `train_models()`: Trains multiple ML models
-- `evaluate_models()`: Evaluates models using various metrics
-- `visualize_results()`: Creates comprehensive visualizations
-- `print_summary()`: Provides detailed analysis summary
+- `model_trainer.py`: Main script to orchestrate the ML workflow
+- `ml_core.py`: Core machine learning functions
+- `visualization.py`: Functions for creating visualizations
+- `api/predict.py`: FastAPI for model deployment
 
 ## 🎯 Key Components
 
@@ -95,25 +93,29 @@ This project teaches you:
 
 You can easily modify the project:
 
-- **Add New Models**: Include additional algorithms in the `train_models()` function
-- **Change Dataset**: Replace the California Housing dataset with your own data
-- **Modify Visualizations**: Customize plots in the `visualize_results()` function
-- **Add Features**: Implement feature engineering techniques
+- **Add New Models**: Include additional algorithms in the `train_model()` function in `ml_core.py`
+- **Change Dataset**: Replace the California Housing dataset with your own data in `ml_core.py`
+- **Modify Visualizations**: Customize plots in the `visualize_results()` function in `visualization.py`
+- **Add Features**: Implement feature engineering techniques in `ml_core.py`
 
 ## 📝 Requirements
 
 - Python 3.7+
-- pandas >= 1.5.0
-- numpy >= 1.21.0
-- matplotlib >= 3.5.0
-- seaborn >= 0.11.0
-- scikit-learn >= 1.1.0
+- pandas>=1.5.0
+- numpy>=1.21.0
+- matplotlib>=3.5.0
+- seaborn>=0.11.0
+- scikit-learn>=1.1.0
+- fastapi>=0.115.0
+- uvicorn>=0.29.0
+- joblib>=1.4.2
+- pydantic>=2.8.2
 
 ## 🎉 Getting Started
 
 1. Clone or download this project
 2. Install the requirements: `pip install -r requirements.txt`
-3. Run the project: `python PYTHON.py`
+3. Run the project: `python model_trainer.py`
 4. Explore the generated visualizations and analysis
 
 ## 📞 Support

@@ -3,9 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Advanced house price prediction using machine learning" />
+  <meta name="theme-color" content="#2563eb" />
+  <!-- API base URL (change to your running API host) -->
+  <meta name="api-base" content="http://localhost:8000" />
   <title>🏠 House Price Prediction</title>
+  
+  <!-- External CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Preload important assets -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <style>
     :root {
       --primary-color: #2563eb;
@@ -16,8 +26,19 @@
       --text-primary: #1e293b;
       --text-secondary: #64748b;
       --border-color: #e2e8f0;
-      --shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-      --transition: all 0.3s ease;
+      --shadow: rgba(0, 0, 0, 0.05) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+      --transition: all 0.3s ease-in-out;
+    }
+
+    [data-theme="dark"] {
+      --primary-color: #3b82f6;
+      --primary-light: #60a5fa;
+      --accent-color: #10b981;
+      --background: #0f172a;
+      --card-bg: #1e293b;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --border-color: #334155;
     }
 
     body {
@@ -28,6 +49,7 @@
       color: var(--text-primary);
       min-height: 100vh;
       line-height: 1.6;
+      transition: var(--transition);
     }
 
     .container {
@@ -37,15 +59,53 @@
       border-radius: 24px;
       box-shadow: var(--shadow);
       padding: 40px;
+      border: 1px solid var(--border-color);
+    }
+    
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5em;
     }
 
     h1 {
-      text-align: center;
-      font-size: 2.75rem;
-      margin-bottom: 1.5em;
+      text-align: left;
+      font-size: 2.5rem;
       color: var(--primary-color);
-      font-weight: 700;
-      letter-spacing: -0.5px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin: 0;
+    }
+
+    .theme-switcher {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+    }
+
+    #theme-toggle { display: none; }
+    .toggle-track {
+        width: 50px;
+        height: 26px;
+        background: var(--border-color);
+        border-radius: 13px;
+        position: relative;
+    }
+    .toggle-thumb {
+        position: absolute;
+        width: 22px;
+        height: 22px;
+        background: var(--card-bg);
+        border-radius: 50%;
+        top: 2px;
+        left: 2px;
+        transition: var(--transition);
+    }
+    #theme-toggle:checked + .toggle-track .toggle-thumb {
+        transform: translateX(24px);
+        background: var(--primary-color);
     }
 
     .upload-section {
@@ -55,106 +115,135 @@
       margin-bottom: 32px;
       border: 2px dashed var(--border-color);
       transition: var(--transition);
+      text-align: center;
     }
 
     .upload-section:hover {
       border-color: var(--primary-light);
+      transform: scale(1.02);
+    }
+    
+    #csvFile {
+        display: none;
+    }
+    
+    .upload-label {
+        font-weight: 600;
+        cursor: pointer;
+        color: var(--primary-color);
+    }
+    
+    .upload-label i {
+        margin-right: 8px;
     }
 
     form {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 24px;
     }
 
     .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+      position: relative;
     }
 
     label {
-      font-weight: 500;
+      font-weight: 600;
       color: var(--text-secondary);
-      font-size: 0.95rem;
+      font-size: 0.9rem;
+      position: absolute;
+      top: -10px;
+      left: 12px;
+      background: var(--card-bg);
+      padding: 0 5px;
     }
 
     input[type='number'] {
-      padding: 14px;
+      padding: 16px;
       border-radius: 12px;
-      border: 2px solid var(--border-color);
+      border: 1px solid var(--border-color);
       font-size: 1rem;
       transition: var(--transition);
       width: 100%;
       box-sizing: border-box;
+      background: transparent;
+      color: var(--text-primary);
     }
 
     input[type='number']:focus {
       outline: none;
       border-color: var(--primary-light);
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
     }
 
-    input[type='file'] {
-      width: 100%;
-      padding: 10px;
-      margin-top: 8px;
+    .form-actions {
+        grid-column: 1 / -1;
+        display: flex;
+        gap: 16px;
+        margin-top: 16px;
     }
 
     button {
-      background: var(--primary-color);
+      background-image: linear-gradient(to right, var(--primary-color), var(--primary-light));
       color: white;
       padding: 16px 32px;
       border: none;
       border-radius: 12px;
       font-size: 1.1rem;
       cursor: pointer;
-      font-weight: 600;
+      font-weight: 700;
       transition: var(--transition);
       width: 100%;
-      margin-top: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
     }
 
     button:hover {
-      background: var(--primary-light);
-      transform: translateY(-1px);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    button.secondary {
+        background: var(--border-color);
+        color: var(--text-secondary);
+        background-image: none;
     }
 
-    button:active {
-      transform: translateY(1px);
+    .result, .error {
+      text-align: center;
+      margin-top: 32px;
+      padding: 24px;
+      border-radius: 16px;
+      font-weight: 700;
+      font-size: 1.25rem;
+      display: none; /* Hidden by default */
     }
 
     .result {
-      text-align: center;
-      margin-top: 24px;
-      padding: 20px;
-      background: #ecfdf5;
-      border-radius: 12px;
-      color: var(--accent-color);
-      font-weight: 600;
-      font-size: 1.2rem;
+      background: linear-gradient(to right, #ecfdf5, #d1fae5);
+      color: #065f46;
+      border: 1px solid #6ee7b7;
     }
 
     .error {
-      text-align: center;
-      margin-top: 24px;
-      padding: 20px;
-      background: #fef2f2;
-      border-radius: 12px;
-      color: #dc2626;
-      font-weight: 500;
+      background: linear-gradient(to right, #fef2f2, #fee2e2);
+      color: #b91c1c;
+      border: 1px solid #fca5a5;
     }
 
     .vis-section {
       margin-top: 48px;
       padding-top: 32px;
-      border-top: 2px solid var(--border-color);
+      border-top: 1px solid var(--border-color);
     }
 
     .vis-section h2 {
       color: var(--text-primary);
-      font-size: 1.5rem;
+      font-size: 1.75rem;
       margin-bottom: 24px;
+      font-weight: 700;
     }
 
     .vis-section img {
@@ -168,40 +257,20 @@
       transform: scale(1.01);
     }
 
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-      body {
-        padding: 16px;
-      }
-      
-      .container {
-        padding: 24px;
-        border-radius: 16px;
-      }
-
-      h1 {
-        font-size: 2rem;
-      }
-
-      form {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* Table styles for CSV predictions */
     table {
       width: 100%;
       border-collapse: separate;
       border-spacing: 0;
       margin: 1em 0;
-      background: white;
+      background: var(--card-bg);
       border-radius: 12px;
       overflow: hidden;
       box-shadow: var(--shadow);
+      border: 1px solid var(--border-color);
     }
 
     th, td {
-      padding: 12px;
+      padding: 14px;
       text-align: center;
       border-bottom: 1px solid var(--border-color);
     }
@@ -211,47 +280,91 @@
       color: white;
       font-weight: 600;
     }
-
-    tr:last-child td {
-      border-bottom: none;
-    }
-
-    tr:hover td {
-      background: var(--background);
-    }
+    
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--background); }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🏠 House Price Predictor</h1>
-    <div class="upload-section">
-      <label for="csvFile">
-        <strong>Predict from CSV file</strong>
-        <br>
-        <small style="color: var(--text-secondary)">Format: 8 columns, no header</small>
-      </label>
-      <input type="file" id="csvFile" accept=".csv" />
+  <noscript>
+    <div style="padding: 20px; background-color: #ffe0b2; color: #e65100; text-align: center;">
+      Please enable JavaScript to use this application.
     </div>
+  </noscript>
+  <div class="container">
+    <div class="header">
+        <h1><i class="fa-solid fa-house-chimney-window"></i> Price Predictor</h1>
+        <div class="theme-switcher">
+            <i class="fa-solid fa-sun"></i>
+            <input type="checkbox" id="theme-toggle">
+            <label for="theme-toggle" class="toggle-track">
+                <div class="toggle-thumb"></div>
+            </label>
+            <i class="fa-solid fa-moon"></i>
+        </div>
+    </div>
+
+    <div class="upload-section">
+      <input type="file" id="csvFile" accept=".csv" />
+      <label for="csvFile" class="upload-label">
+        <i class="fa-solid fa-file-csv"></i>
+        <strong>Predict from CSV</strong>
+        <br>
+        <small style="color: var(--text-secondary); font-weight: 400;">8 columns, no header</small>
+      </label>
+    </div>
+
     <form id="predictForm">
       <div id="inputs"></div>
-      <button type="submit">Calculate Prediction</button>
+      <div class="form-actions">
+        <button type="submit" id="calculateBtn"><i class="fa-solid fa-calculator"></i> Calculate</button>
+        <button type="button" id="clearBtn" class="secondary"><i class="fa-solid fa-eraser"></i> Clear</button>
+      </div>
     </form>
+
     <div class="result" id="predictionResult"></div>
     <div class="error" id="errorMsg"></div>
+
     <div class="vis-section">
-      <h2>Data Analysis Visualization</h2>
-      <img src="house_price_prediction_analysis.png" alt="Data/Model Analysis Visualization" onerror="this.style.display='none'" />
+      <h2><i class="fa-solid fa-chart-line"></i> Data Analysis</h2>
+      <img src="house_price_prediction_analysis.png" alt="Data/Model Analysis Visualization" title="House Price Prediction Analysis" onerror="this.style.display='none'" />
       <div style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 16px; text-align: center;">
         (Visualization will appear here after running the ML pipeline)
       </div>
     </div>
   </div>
+
   <script>
-    // California Housing feature names
+    // --- Constants ---
     const FEATURES = [
-      'MedInc','HouseAge','AveRooms','AveBedrms','Population','AveOccup','Latitude','Longitude'
+      { name: 'MedInc', placeholder: 'e.g., 8.3252' },
+      { name: 'HouseAge', placeholder: 'e.g., 41' },
+      { name: 'AveRooms', placeholder: 'e.g., 6.9841' },
+      { name: 'AveBedrms', placeholder: 'e.g., 1.0238' },
+      { name: 'Population', placeholder: 'e.g., 322' },
+      { name: 'AveOccup', placeholder: 'e.g., 2.5555' },
+      { name: 'Latitude', placeholder: 'e.g., 37.88', min: 32, max: 42 },
+      { name: 'Longitude', placeholder: 'e.g., -122.23', min: -124, max: -114 }
     ];
+
     const INPUTS_DIV = document.getElementById('inputs');
+    const PREDICTION_RESULT = document.getElementById('predictionResult');
+    const ERROR_MSG = document.getElementById('errorMsg');
+    // Read API base from meta tag so the frontend can be pointed to localhost or a deployed API
+    const META_API_BASE = document.querySelector('meta[name="api-base"]');
+    const API_BASE = (META_API_BASE && META_API_BASE.content) ? META_API_BASE.content.replace(/\/$/, '') : '';
+    const API_PREDICT_ENDPOINT = API_BASE ? `${API_BASE}/api/predict` : '/api/predict';
+    const CALCULATE_BTN = document.getElementById('calculateBtn');
+    const CLEAR_BTN = document.getElementById('clearBtn');
+    const CSV_FILE_INPUT = document.getElementById('csvFile');
+    const THEME_TOGGLE = document.getElementById('theme-toggle');
+    const UPLOAD_LABEL = document.querySelector('.upload-label');
+
+    // --- Helper Functions ---
+
+    /**
+     * Renders the input fields for features.
+     */
     function renderInputs() {
       INPUTS_DIV.innerHTML = '';
       FEATURES.forEach(f => {
@@ -259,72 +372,264 @@
         group.className = 'input-group';
         
         const label = document.createElement('label');
-        label.textContent = f;
+        label.textContent = f.name;
         
         const input = document.createElement('input');
         input.type = 'number';
         input.step = 'any';
         input.required = true;
-        input.name = f;
-        if(f === 'Latitude') { input.min = 32; input.max = 42; }
-        if(f === 'Longitude') { input.min = -124; input.max = -114; }
+        input.name = f.name;
+        input.placeholder = f.placeholder;
+        if(f.min !== undefined) { input.min = f.min; }
+        if(f.max !== undefined) { input.max = f.max; }
         
         group.appendChild(label);
         group.appendChild(input);
         INPUTS_DIV.appendChild(group);
       });
     }
-    renderInputs();
-    // Predict form
-    document.getElementById('predictForm').onsubmit = async (e) => {
-      e.preventDefault();
-      document.getElementById('errorMsg').textContent = '';
-      const vals = Array.from(INPUTS_DIV.querySelectorAll('input')).map(inp=> Number(inp.value));
-      if(vals.some(isNaN)) { document.getElementById('errorMsg').textContent = 'Fill out all fields.'; return; }
-      document.getElementById('predictionResult').textContent = 'Predicting...';
-      try {
-        const resp = await fetch('/api/predict', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({features: vals}) });
-        const data = await resp.json();
-        if(data.prediction !== undefined) {
-          document.getElementById('predictionResult').textContent = `Predicted House Price: $${(data.prediction * 100000).toLocaleString()}`;
-        } else {
-          document.getElementById('predictionResult').textContent = '';
-          document.getElementById('errorMsg').textContent = data.error || 'Prediction failed.';
+
+    /**
+     * Displays a success message.
+     * @param {string} message - The message to display.
+     */
+    function showResult(message) {
+        PREDICTION_RESULT.innerHTML = message;
+        PREDICTION_RESULT.style.display = 'block';
+        ERROR_MSG.style.display = 'none';
+    }
+
+    /**
+     * Displays an error message.
+     * @param {string} message - The error message to display.
+     */
+    function showError(message) {
+        ERROR_MSG.textContent = message;
+        ERROR_MSG.style.display = 'block';
+        PREDICTION_RESULT.style.display = 'none';
+    }
+    
+    /**
+     * Hides all result and error messages.
+     */
+    function hideMessages() {
+        PREDICTION_RESULT.style.display = 'none';
+        ERROR_MSG.style.display = 'none';
+    }
+
+    /**
+     * Extracts a numeric prediction from various common API response shapes.
+     * Supports: { prediction }, { price }, { pred }, arrays under those keys.
+     * @param {any} data - Parsed JSON response body
+     * @returns {number|undefined}
+     */
+    function extractPrediction(data) {
+        if (!data || typeof data !== 'object') return undefined;
+        const candidates = ['prediction', 'price', 'pred'];
+        for (const key of candidates) {
+            const value = data[key];
+            if (typeof value === 'number' && Number.isFinite(value)) return value;
+            if (Array.isArray(value) && value.length && Number.isFinite(value[0])) return value[0];
         }
-      } catch(err) {
-        document.getElementById('predictionResult').textContent = '';
-        document.getElementById('errorMsg').textContent = 'Error connecting to API.';
+        return undefined;
+    }
+
+    /**
+     * Resets the CSV upload input and label state.
+     * @param {string} originalHtml - The original HTML content of the upload label.
+     */
+    function resetCsvUploadState(originalHtml) {
+        UPLOAD_LABEL.innerHTML = originalHtml;
+        UPLOAD_LABEL.style.pointerEvents = 'auto';
+        CSV_FILE_INPUT.value = ''; // Clear the file input
+    }
+
+    /**
+     * Validates a single feature value against its min/max constraints.
+     * @param {object} feature - The feature object with name, min, and max properties.
+     * @param {number} value - The value to validate.
+     * @returns {string|null} An error message if validation fails, otherwise null.
+     */
+    function validateFeatureValue(feature, value) {
+        if (feature.min !== undefined && value < feature.min) {
+            return `Value for ${feature.name} cannot be less than ${feature.min}.`;
+        }
+        if (feature.max !== undefined && value > feature.max) {
+            return `Value for ${feature.name} cannot be greater than ${feature.max}.`;
+        }
+        return null;
+    }
+
+    // --- Event Listeners ---
+
+    // Manual prediction form submission
+    document.getElementById('predictForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideMessages();
+      
+      const inputs = INPUTS_DIV.querySelectorAll('input');
+      const vals = Array.from(inputs).map(inp => Number(inp.value));
+      
+      if (vals.some(isNaN)) { 
+          showError('Please fill out all fields with valid numbers.'); 
+          return; 
       }
-    };
-    // CSV upload handler
-    document.getElementById('csvFile').addEventListener('change', e => {
+
+      // Additional validation for min/max for Latitude and Longitude
+      for (let i = 0; i < FEATURES.length; i++) {
+          const feature = FEATURES[i];
+          const value = vals[i];
+          const validationError = validateFeatureValue(feature, value);
+          if (validationError) {
+              showError(validationError);
+              return;
+          }
+      }
+
+      CALCULATE_BTN.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Predicting...';
+      CALCULATE_BTN.disabled = true;
+
+      try {
+        const resp = await fetch(API_PREDICT_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ features: vals }),
+          mode: 'cors'
+        });
+
+        // Attempt to parse JSON, but handle non-json responses
+        const text = await resp.text();
+        let data = {};
+        try { data = text ? JSON.parse(text) : {}; } catch (e) { data = { error: text }; }
+
+        if (resp.ok) {
+          const y = extractPrediction(data);
+          if (y !== undefined) {
+            showResult(`Predicted Price: <strong>$${(y * 100000).toLocaleString('en-US', { maximumFractionDigits: 0 })}</strong>`);
+          } else {
+            showError('API returned unexpected response format.');
+            console.error('Unexpected API response:', data);
+          }
+        } else {
+          const msg = data.detail || data.error || `HTTP ${resp.status} ${resp.statusText}`;
+          showError(`Prediction failed: ${msg}`);
+          console.error('API error', resp.status, data);
+        }
+      } catch (err) {
+        console.error('Network or fetch error', err);
+        showError('Network error: could not reach the prediction API. Make sure the API is running and the API base URL in the page meta is correct.');
+      } finally {
+        CALCULATE_BTN.innerHTML = '<i class="fa-solid fa-calculator"></i> Calculate';
+        CALCULATE_BTN.disabled = false;
+      }
+    });
+
+    // CSV file upload handling
+    CSV_FILE_INPUT.addEventListener('change', async e => {
       const file = e.target.files[0];
       if(!file) return;
+      hideMessages();
+
+      const originalUploadLabelHtml = UPLOAD_LABEL.innerHTML;
+      UPLOAD_LABEL.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing CSV...';
+      UPLOAD_LABEL.style.pointerEvents = 'none';
+
       const reader = new FileReader();
       reader.onload = async evt => {
         const rows = evt.target.result.trim().split(/\r?\n/);
-        if(!rows.length) return;
-        document.getElementById('predictionResult').innerHTML = '';
-        document.getElementById('errorMsg').textContent = '';
-        let html = `<b>CSV Predictions:</b><br><table style='margin:0.5em 0;width:100%;border-collapse:collapse;'><tr>`;
-        FEATURES.forEach(f=>{html+=`<th style='padding:4px;border:1px solid #ccc;'>${f}</th>`});
-        html+='<th>Price ($)</th></tr>';
+        if(!rows.length) {
+            showError('CSV file is empty.');
+            resetCsvUploadState(originalUploadLabelHtml);
+            return;
+        }
+        
+        let tableHtml = `<b>CSV Predictions:</b><br><table><tr>${FEATURES.map(f => `<th>${f.name}</th>`).join('')}<th>Price ($)</th></tr>`;
+        let hasErrors = false;
+
         for(let row of rows) {
           let vals = row.split(',').map(Number);
-          if(vals.length!==8) continue;
-          try {
-            const resp = await fetch('/api/predict', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({features: vals}) });
-            const data = await resp.json();
-            html += '<tr>' + vals.map(v=>`<td style='border:1px solid #eee;text-align:center;'>${v}</td>`).join('') + `<td style='font-weight:bold;border:1px solid #eee;text-align:center;'>$${data.prediction ? (data.prediction*100000).toLocaleString() : '?'}</td></tr>`;
-          } catch {
-            html += '<tr><td colspan="9" style="color:red;">Error predicting for row.</td></tr>';
+          let rowError = '';
+
+          if(vals.length !== FEATURES.length) {
+            rowError = `Expected ${FEATURES.length} columns, got ${vals.length}.`;
+            hasErrors = true;
+          } else if(vals.some(isNaN)) {
+            rowError = 'Contains non-numeric values.';
+            hasErrors = true;
+          } else {
+            // Validate min/max for Latitude and Longitude in CSV
+            for (let i = 0; i < FEATURES.length; i++) {
+                const feature = FEATURES[i];
+                const value = vals[i];
+                const validationError = validateFeatureValue(feature, value);
+                if (validationError) {
+                    rowError = validationError;
+                    hasErrors = true;
+                    break;
+                }
+            }
           }
+          
+          let predictedPrice = '<i class="fa-solid fa-question"></i>';
+          if (!rowError) {
+              try {
+                const resp = await fetch(API_PREDICT_ENDPOINT, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ features: vals })
+                });
+                const data = await resp.json();
+                if (resp.ok) {
+                    const y = extractPrediction(data);
+                    if (y !== undefined) {
+                        predictedPrice = (y * 100000).toLocaleString('en-US', { maximumFractionDigits: 0 });
+                    } else {
+                        rowError = 'Unexpected API response format.';
+                        hasErrors = true;
+                    }
+                } else {
+                    rowError = data.detail || data.error || 'API prediction failed.';
+                    hasErrors = true;
+                }
+              } catch(err) {
+                rowError = 'API connection error.';
+                hasErrors = true;
+              }
+          }
+          
+          tableHtml += `<tr>${vals.map(v => `<td>${v}</td>`).join('')}<td>${rowError ? `<span style="color: #b91c1c; font-size: 0.8em;">${rowError}</span>` : `<strong>$${predictedPrice}</strong>`}</td></tr>`;
         }
-        html+='</table>';
-        document.getElementById('predictionResult').innerHTML = html;
+        tableHtml += '</table>';
+
+        if (hasErrors) {
+            showError('Some rows in the CSV had errors. See table for details.');
+        }
+        showResult(tableHtml);
+        resetCsvUploadState(originalUploadLabelHtml);
       };
       reader.readAsText(file);
     });
+
+    // Clear button functionality
+    CLEAR_BTN.addEventListener('click', () => {
+        INPUTS_DIV.querySelectorAll('input').forEach(input => input.value = '');
+        hideMessages();
+    });
+
+    // Theme toggle functionality
+    THEME_TOGGLE.addEventListener('change', () => {
+        document.body.dataset.theme = THEME_TOGGLE.checked ? 'dark' : 'light';
+        localStorage.setItem('theme', document.body.dataset.theme);
+    });
+
+    // On page load, set theme from localStorage
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.body.dataset.theme = savedTheme;
+    THEME_TOGGLE.checked = savedTheme === 'dark';
+
+    // Initial render of input fields
+    renderInputs();
+
   </script>
 </body>
 </html>
